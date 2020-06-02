@@ -1,0 +1,11 @@
+{# le template herite du template base.html.twig à la racine de template #}
+{% extends 'base.html.twig' %}
+
+{#surcharge rempacement du bloc title defini dans base.html.twig
+{{ parent() }} reprend le contenu du bloc title feni dans base.html.twig#}
+{% block title %} {{ parent() }} - Twig{% endblock %}
+
+{# surcharge (remplacement) du bloc body defini dans base.html.twig #}
+{% block body %}
+
+{% endblock %}
