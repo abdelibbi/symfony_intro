@@ -1,13 +1,13 @@
-<p>Contenu de twig /inclus.html.twig</p>
+<p>Contenu de twig/inclus.html.twig</p>
 
 {% if test is defined %}
-<p>le fichier inclus a acceès à la variable test qui vaut : {{ test }}</p>
+    <p>Le fichier inclus a accès à la variable test qui vaut : {{ test }}</p>
 {% else %}
-<p>le fichier inclus na pas acceès à la variable test </p>
+    <p>Le fichier inclus n'a pas accès à la variable test</p>
 {% endif %}
 
 {% if foo is defined %}
-<p>le fichier inclus a acceès à la variable foo qui vaut : {{ foo }}</p>
+    <p>Le fichier inclus a accès à la variable foo qui vaut : {{ foo }}</p>
 {% else %}
-    <p>le fichier inclus na pas acceès à la variable foo </p>
+    <p>Le fichier inclus n'a pas accès à la variable foo</p>
 {% endif %}

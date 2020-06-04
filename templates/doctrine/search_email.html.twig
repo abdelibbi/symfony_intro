@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <form method="get">
+        <input type="email" name="email" placeholder="Email">
+        <button type="submit">Chercher</button>
+
+    </form>
+    {% if user is defined %}
+        {% if user is not null %}
+            <p>l'utilisateur est {{ user.firsname }}{{ user.lastname }}</p>
+            {% else %}
+                <p>l'utilisateur n'existe pas </p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

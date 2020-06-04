@@ -161,18 +161,29 @@ surcharge (remplacement) du bloc title défini dans base.html.twig
     #}
     <p>{{ demain.format('d/m/Y H:i') }}</p>
 
-    {#par defaut le html est echappé en entité html#}
-    {% set paragraphe = '<p> un paragraphe</p>' %}
+    {% set paragraphe = '<p>Un paragraphe</p>' %}
+
+    {# par défaut, le HTML est échappé en entités HTML #}
     {{ paragraphe }}
+
+    {# pour que le HTML ne soit pas échappé #}
     {{ paragraphe|raw }}
 
+    {#
+    inclusion d'un autre template :
+    chemin à partir de la racine du répertoire templates
+    #}
     {% include 'twig/inclus.html.twig' %}
 
+    {# le fichier n'a pas accès aux variables venant de ce fichier #}
     {% include 'twig/inclus.html.twig' only %}
 
-    {% include 'twig/inclus.html.twig' with {foo:'BAR'} %}
+    {# le fichier inclus a accès à une variable foo qui vaut 'BAR' #}
+    {% include 'twig/inclus.html.twig' with {foo: 'BAR'} %}
 
-    {% include 'twig/inclus.html.twig' with {foo:'BAR'} only %}
+    {# le fichier inclus n'a accès qu'à une variable foo qui vaut 'BAR' #}
+    {% include 'twig/inclus.html.twig' with {foo: 'BAR'} only %}
 
-
+    {# équivalent d'un var_dump() #}
+    {{ dump(test) }}
 {% endblock %}

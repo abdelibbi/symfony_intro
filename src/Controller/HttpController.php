@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -72,13 +74,14 @@ class HttpController extends AbstractController
     public function session(SessionInterface $session)
     {
         // pour ajouter des éléments à la session :
+
         $session->set('prenom', 'Julien');
         $session->set('nom', 'Anest');
 
-        // les éléments enregistrés par l'objet Session le sont
+         // les éléments enregistrés par l'objet Session le sont
         // dans $_SESSION['_sf2_attributes']
         dump($_SESSION);
-
+        var_dump($_SESSION);
         // pour accéder directement aux élément enregistrés
         // par l'objet session
         dump($session->all());
@@ -100,17 +103,117 @@ class HttpController extends AbstractController
     }
 
     /**
+     * Une méthode de contrôleur doit nécessairement retourner
+     * un objet instance de la classe Symfony\Component\HttpFoundation\Response
+     *
      * @Route("/reponse")
      */
     public function reponse(Request $request)
     {
-        http://localhost:8000/http/reponse?type=text
-        if($request->query->get('type')=='text'){
+        // http://localhost:8000/http/reponse?type=text
+        if ($request->query->get('type') == 'text') {
             $response = new Response('Contenu en texte brut');
+
             return $response;
+        // http://localhost:8000/http/reponse?type=json
+        } elseif ($request->query->get('type') == 'json') {
+            $response = [
+                'nom' => 'Marx',
+                'prenom' => 'Groucho'
+            ];
+
+            // return new Response(json_encode($response));
+
+            // encode le tableau $response en json
+            // et retourne une réponse avec l'entête HTTP
+            // Content-Type: application/json au lieu de text/html
+            return new JsonResponse($response);
+        // http://localhost:8000/http/reponse?found=no
+        } elseif ($request->query->get('found') == 'no') {
+            // pour retourner une 404, on jette cette exception
+            throw new NotFoundHttpException();
+        // http://localhost:8000/http/reponse?redirect=index
+        } elseif ($request->query->get('redirect') == 'index') {
+            // redirection vers une page en passant le nom de sa route
+            return $this->redirectToRoute('app_index_index');
+        // http://localhost:8000/http/reponse?redirect=bonjour
+        } elseif ($request->query->get('redirect') == 'bonjour') {
+            // redirection vers une route qui contient un partie variable
+            return $this->redirectToRoute(
+                'app_index_bonjour',
+                [
+                    'qui' => 'le monde'
+                ]
+            );
         }
 
-
+        // retourne un objet Response dont le contenu est
+        // le HTML construit par le template
         return $this->render('http/reponse.html.twig');
     }
+
+    /*
+     * Faire une page avec un formulaire en post avec :
+     * - email (text)
+     * - message (textarea)
+     *
+     * Si le formulaire est envoyé, vérifier que les deux champs sont remplis
+     * Si non, afficher un message d'erreur
+     * Si oui, enregistrer les valeurs en session et rediriger vers
+     * une nouvelle page qui les affiche et vide la session
+     * Dans cette page, si la session est vide, on redirige vers le formulaire
+     */
+
+    /**
+     * @Route("/formulaire")
+     */
+    public function formulaire(Request $request, SessionInterface $session)
+    {
+        $erreur = '';
+
+        // si le formulaire en POST a été envoyé
+        if ($request->isMethod('POST')) {
+            // $data contient tout $_POST
+            $data = $request->request->all();
+
+            if (!empty($data['email']) && !empty($data['message'])) {
+                $session->set('email', $data['email']);
+                $session->set('message', $data['message']);
+
+                //dump($session->all());
+
+                return $this->redirectToRoute('app_http_affichage');
+            } else {
+                $erreur = 'Tous les champs sont obligatoires';
+            }
+        }
+
+        return $this->render(
+            'http/formulaire.html.twig',
+            [
+                'erreur' => $erreur
+            ]
+        );
+    }
+
+    /**
+     * @Route("/affichage")
+     */
+    public function affichage(SessionInterface $session)
+    {
+        if (empty($session->all())){
+            return $this->redirectToRoute('app_http_formulaire');
+        }
+        $email  =  $session->get('email');
+        $message  =  $session->get('message');
+
+        $session->clear();
+
+        return $this->render('http/affichage.html.twig',
+        [
+            'email'=> $email,
+            'message'=> $message
+        ]);
+    }
+
 }

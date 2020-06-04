@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if user is not null %}
+        <p> Bonjour {{ user.firsname }} {{ user.lastname }}</p>
+        {% else %}
+        <p>Aucun user avec cet ID</p>
+    {% endif %}
+{% endblock %}
